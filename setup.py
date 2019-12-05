@@ -1,4 +1,5 @@
 from distutils.core import setup
+from setuptools import find_packages
 
 
 def readme():
@@ -8,9 +9,11 @@ def readme():
 setup(
   name = 'flask-check-json', 
   packages=find_packages(exclude=['tests.*', 'tests']),
-  version = '0.1',
+  version = '0.1.3',
   license='MIT',
   description = 'JSON Validator',
+  long_description=readme(),
+  long_description_content_type="text/markdown",
   author = 'Ercy Moreira Neto',
   author_email = 'ercym.neto@gmail.com',
   url = 'https://github.com/panda-coder/flask-check-json',

@@ -1,6 +1,9 @@
 from functools import wraps
 
-from flask import request, g, abort
+from flask import request, jsonify, current_app
+
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError
 
 
 def validate_json(f):
@@ -8,12 +11,11 @@ def validate_json(f):
     def wrapper(*args, **kw):
         try:
             request.get_json()
-        except BadRequest, e:
+        except Exception:
             msg = "payload must be a valid json"
             return jsonify({"error": msg}), 400
         return f(*args, **kw)
     return wrapper
-
 
 
 def validate_schema(schema_name):
@@ -22,7 +24,7 @@ def validate_schema(schema_name):
         def wrapper(*args, **kw):
             try:
                 validate(request.json, current_app.config[schema_name])
-            except ValidationError, e:
+            except ValidationError as e:
                 return jsonify({"error": e.message}), 400
             return f(*args, **kw)
         return wrapper

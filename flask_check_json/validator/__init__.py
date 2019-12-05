@@ -1,33 +1,29 @@
 # Flask imports
-from flask import request, abort, BadRequest
+from flask import request, abort
 
 # JSON SChema Imports
-from jsonschema import validate, ValidationError
-
-# Default extensions
-from extensions import DefaultsExtension
+from jsonschema import validate
+from jsonschema.exceptions import ValidationError
 
 
 def validate_json(f):
     # Validate the json
     try:
         request.get_json()
-    except BadRequest, e:
+    except Exception:
         msg = "payload must be a valid json"
         return abort(400, {"error": msg})
 
 
-def validate_schema(schema=None, force=False, fill_defaults=False):
-    # Validate the schema of the json
-    data = request.get_json(force=force)
+def validate_schema(schema=None, force=False, data=None):
+    if not data:
+        # Validate the schema of the json
+        data = request.get_json(force=force)
 
     if data is None:
         return abort(400, 'Failed to decode JSON object')
 
     try:
-        if fill_defaults:
-            DefaultsExtension(schema).validate(data)
-        else:
-            validate(data, schema)
+        validate(data, schema)
     except ValidationError as e:
         return abort(400, e)
